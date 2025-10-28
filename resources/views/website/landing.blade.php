@@ -36,11 +36,22 @@
 
     <main class="container my-5">
         <div class="row">
-            <div class="col-md-6">
-                <img src="https://via.placeholder.com/500x500.png?text=Organic+Honey" class="img-fluid" alt="Product Image">
-                <h2 class="mt-3">Organic Honey</h2>
-                <p>Our organic honey is sourced from the finest bees and flowers, ensuring a pure and natural taste. It's perfect for your tea, toast, or as a natural sweetener.</p>
-            </div>
+            @if($products->isNotEmpty())
+                @php
+                    $product = $products->first();
+                @endphp
+                <div class="col-md-6">
+                    <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/500x500.png?text=Organic+Honey' }}" class="img-fluid" alt="Product Image">
+                    <h2 class="mt-3">{{ $product->name }}</h2>
+                    <p>{{ $product->description }}</p>
+                </div>
+            @else
+                <div class="col-md-6">
+                    <img src="https://placehold.co/500x500.png?text=Organic+Honey" class="img-fluid" alt="Product Image">
+                    <h2 class="mt-3">Organic Honey</h2>
+                    <p>Our organic honey is sourced from the finest bees and flowers, ensuring a pure and natural taste. It's perfect for your tea, toast, or as a natural sweetener.</p>
+                </div>
+            @endif
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -81,7 +92,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span>Organic Honey</span>
+                                                    <span>{{ $product->name }}</span>
                                                     <div class="input-group w-50">
                                                         <button class="btn btn-outline-secondary" type="button" id="button-minus">-</button>
                                                         <input type="text" class="form-control text-center" id="quantity" value="1" readonly>
@@ -89,15 +100,15 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="product-total">$59.00</td>
+                                            <td class="product-total">${{ $product->price }}</td>
                                         </tr>
                                         <tr class="cart-subtotal">
                                             <th class="subtotal">Subtotal</th>
-                                            <td class="subtotal text-end">$59.00</td>
+                                            <td class="subtotal text-end">${{ $product->price }}</td>
                                         </tr>
                                         <tr class="order-total">
                                             <th class="total">Total</th>
-                                            <td class="total text-end">$59.00</td>
+                                            <td class="total text-end">${{ $product->price }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
