@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -11,7 +12,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = \App\Models\Product::all();
+        $products = Product::all();
         return view('admin.products.index', compact('products'));
     }
 
@@ -32,12 +33,22 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required|numeric',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        \App\Models\Product::create($request->all());
+        $product = new Product($request->except('image'));
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product created successfully.');
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/assets/upload');
+            $image->move($destinationPath, $name);
+            $product->image = $name;
+        }
+
+        $product->save();
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -53,7 +64,7 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        $product = \App\Models\Product::find($id);
+        $product = Product::find($id);
         return view('admin.products.edit', compact('product'));
     }
 
@@ -66,13 +77,30 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required|numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
         ]);
 
-        $product = \App\Models\Product::find($id);
-        $product->update($request->all());
+        $product = Product::find($id);
+        $product->update($request->except('image'));
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully');
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($product->image) {
+                $oldImagePath = public_path('assets/upload/' . $product->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/assets/upload');
+            $image->move($destinationPath, $name);
+            $product->image = $name;
+            $product->save();
+        }
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully');
     }
 
     /**
@@ -80,10 +108,15 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = \App\Models\Product::find($id);
+        $product = Product::find($id);
+        if ($product->image) {
+            $imagePath = public_path('assets/upload/' . $product->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
         $product->delete();
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product deleted successfully');
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully');
     }
 }

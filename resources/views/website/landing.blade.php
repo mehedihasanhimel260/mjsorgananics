@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>MJS Organics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/website/css/style.css') }}">
+    @notifyCss
 </head>
 <body>
+    @include('notify::components.notify')
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
@@ -36,90 +39,23 @@
 
     <main class="container my-5">
         <div class="row">
-            @if($products->isNotEmpty())
-                @php
-                    $product = $products->first();
-                @endphp
-                <div class="col-md-6">
-                    <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/500x500.png?text=Organic+Honey' }}" class="img-fluid" alt="Product Image">
-                    <h2 class="mt-3">{{ $product->name }}</h2>
-                    <p>{{ $product->description }}</p>
-                </div>
-            @else
-                <div class="col-md-6">
-                    <img src="https://placehold.co/500x500.png?text=Organic+Honey" class="img-fluid" alt="Product Image">
-                    <h2 class="mt-3">Organic Honey</h2>
-                    <p>Our organic honey is sourced from the finest bees and flowers, ensuring a pure and natural taste. It's perfect for your tea, toast, or as a natural sweetener.</p>
-                </div>
-            @endif
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title text-center">Order Now</h3>
-                        <form>
-                            <div class="mb-3">
-                                <label for="userName" class="form-label">Your Name</label>
-                                <input type="text" class="form-control" id="userName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="phone" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <textarea class="form-control" id="address" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Payment Method</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
-                                    <label class="form-check-label" for="cod">
-                                        Cash on Delivery (COD)
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="order-checkout">
-                                <h3 class="order-title">Your order</h3>
-                                <table class="checkout-table table">
-                                    <thead>
-                                        <tr>
-                                            <th class="product-name">PRODUCT</th>
-                                            <th class="product-total">TOTAL</th>
-                                        </tr>
-
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span>{{ $product->name }}</span>
-                                                    <div class="input-group w-50">
-                                                        <button class="btn btn-outline-secondary" type="button" id="button-minus">-</button>
-                                                        <input type="text" class="form-control text-center" id="quantity" value="1" readonly>
-                                                        <button class="btn btn-outline-secondary" type="button" id="button-plus">+</button>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="product-total">${{ $product->price }}</td>
-                                        </tr>
-                                        <tr class="cart-subtotal">
-                                            <th class="subtotal">Subtotal</th>
-                                            <td class="subtotal text-end">${{ $product->price }}</td>
-                                        </tr>
-                                        <tr class="order-total">
-                                            <th class="total">Total</th>
-                                            <td class="total text-end">${{ $product->price }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Confirm Order</button>
-                            </div>
-                        </form>
+            @forelse($products as $product)
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="{{ $product->image ? asset('assets/upload/' . $product->image) : 'https://placehold.co/500x500.png?text=No+Image' }}" class="card-img-top" alt="Product Image">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $product->name }}</h5>
+                            <p class="card-text">{{ Str::limit($product->description, 100) }}</p>
+                            <p class="card-text"><strong>Price: ${{ $product->price }}</strong></p>
+                            <a href="#" class="btn btn-primary order-now-btn">Order Now</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="col-12">
+                    <p>No products available.</p>
+                </div>
+            @endforelse
         </div>
     </main>
 
@@ -131,7 +67,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form method="POST" action="{{ route('order.store') }}">
+                        @csrf
+                        <input type="hidden" name="productName" id="modalProductName">
+                        <input type="hidden" name="quantity" id="modalQuantity">
                         <div class="mb-3">
                             <label for="productName" class="form-label">Selected Product</label>
                             <input type="text" class="form-control" id="productName" disabled>
@@ -146,15 +85,15 @@
                         </div>
                         <div class="mb-3">
                             <label for="userName" class="form-label">User Name</label>
-                            <input type="text" class="form-control" id="userName" required>
+                            <input type="text" class="form-control" id="userName" name="userName" required>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="tel" class="form-control" id="phone" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
                         </div>
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" rows="3" required></textarea>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Payment Method</label>
@@ -182,6 +121,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/website/js/main.js') }}"></script>
+    @notifyJs
 </body>
 </html>
 

@@ -9,7 +9,7 @@
                         <h3 class="card-title">Edit Product</h3>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('products.update', $product->id) }}" method="POST">
+                        <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="form-group">
@@ -23,6 +23,13 @@
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <textarea name="description" id="description" class="form-control">{{ $product->description }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Product Image</label>
+                                @if ($product->image)
+                                    <img src="{{ asset('assets/upload/' . $product->image) }}" alt="{{ $product->name }}" width="100">
+                                @endif
+                                <input type="file" name="image" id="image" class="form-control">
                             </div>
                             <button type="submit" class="btn btn-primary">Update</button>
                         </form>

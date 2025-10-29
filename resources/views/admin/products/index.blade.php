@@ -16,6 +16,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>Image</th>
                                     <th>Name</th>
                                     <th>Price</th>
                                     <th>Action</th>
@@ -25,6 +26,13 @@
                                 @foreach ($products as $product)
                                     <tr>
                                         <td>{{ $product->id }}</td>
+                                        <td>
+                                            @if ($product->image)
+                                                <img src="{{ asset('assets/upload/' . $product->image) }}" alt="{{ $product->name }}" width="50">
+                                            @else
+                                                No Image
+                                            @endif
+                                        </td>
                                         <td>{{ $product->name }}</td>
                                         <td>{{ $product->price }}</td>
                                         <td>
