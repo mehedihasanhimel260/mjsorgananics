@@ -7,7 +7,9 @@
     <title>MJS Organics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/website/css/style.css') }}">
-    @notifyCss
+    <link rel="stylesheet" href="{{ asset('assets/global/css/notify.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     @include('notify::components.notify')
@@ -92,8 +94,8 @@
                             <input type="tel" class="form-control" id="phone" name="phone" required>
                         </div>
                         <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                            <label for="address" class="form-label">Your Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" placeholder="Detecting your location..." required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Payment Method</label>
@@ -120,8 +122,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="{{ asset('assets/website/js/main.js') }}"></script>
-    @notifyJs
+    <script src="{{ asset('assets/global/js/notify.js') }}"></script>
 </body>
 </html>
-

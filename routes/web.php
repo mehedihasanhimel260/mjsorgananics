@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [FrontendController::class, 'index']);
 Route::post('/order', [FrontendController::class, 'store'])->name('order.store');
 
+
 Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard.index');
