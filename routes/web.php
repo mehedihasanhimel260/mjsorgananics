@@ -20,10 +20,11 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
 
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'update'])->name('admin.orders.updateStatus');
 });
 
 Route::prefix('admin')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::get('/', [AuthController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AuthController::class, 'login'])->name('admin.login.submit');
     Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 });

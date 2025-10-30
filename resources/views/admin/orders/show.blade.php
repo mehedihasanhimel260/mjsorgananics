@@ -16,6 +16,22 @@
                 <p><strong>Total Price:</strong> {{ $order->total_price }}</p>
                 <p><strong>Payment Method:</strong> {{ $order->payment_method }}</p>
                 <p><strong>Status:</strong> {{ $order->status }}</p>
+
+                <h4 class="mt-4">Update Order Status</h4>
+                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
+                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </form>
             </div>
         </div>
     </div>
