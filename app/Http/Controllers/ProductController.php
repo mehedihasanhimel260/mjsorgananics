@@ -41,7 +41,7 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/assets/upload');
+            $destinationPath = base_path('assets/upload');
             $image->move($destinationPath, $name);
             $product->image = $name;
         }
@@ -86,7 +86,7 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($product->image) {
-                $oldImagePath = public_path('assets/upload/' . $product->image);
+                $oldImagePath = base_path('assets/upload/' . $product->image);
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
@@ -94,7 +94,7 @@ class ProductController extends Controller
 
             $image = $request->file('image');
             $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/assets/upload');
+            $destinationPath = base_path('assets/upload');
             $image->move($destinationPath, $name);
             $product->image = $name;
             $product->save();
@@ -110,7 +110,7 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if ($product->image) {
-            $imagePath = public_path('assets/upload/' . $product->image);
+            $imagePath = base_path('assets/upload/' . $product->image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
